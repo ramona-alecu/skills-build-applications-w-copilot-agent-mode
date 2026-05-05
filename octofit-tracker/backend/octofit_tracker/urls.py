@@ -1,3 +1,4 @@
+
 """octofit_tracker URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -15,8 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+import os
+
+def api_root(request):
+    CODESPACE_NAME = os.environ.get('CODESPACE_NAME')
+    if CODESPACE_NAME:
+        api_url = f"https://{CODESPACE_NAME}-8000.app.github.dev/api/"
+    else:
+        api_url = "http://localhost:8000/api/"
+    return JsonResponse({
+        'message': 'Welcome to OctoFit Tracker API',
+        'api_root': api_url
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('octofit_tracker.api_urls')),
+    path('', api_root),
+]
+
+urlpatterns += [
+    path('api/', include('octofit_tracker.api_urls')),
 ]
